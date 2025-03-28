@@ -3,24 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculatrice Flask</title>
-
+    <link rel="stylesheet" href="style.css">
+    <title>Calculatrice Avancée</title>
 </head>
 <body>
-    <h1>Calculatrice</h1>
-    <form method="post">
-        <input type="number" name="nombre1" step="any" required>
-        <select name="operation">
-            <option value="addition">+</option>
-            <option value="soustraction">-</option>
-            <option value="multiplication">×</option>
-            <option value="division">÷</option>
+    <div class="calculator">
+        <h1>Calculatrice</h1>
+        <input type="number" id="a" placeholder="Nombre 1">
+        <input type="number" id="b" placeholder="Nombre 2">
+        <select id="operation">
+            <option value="addition">Addition</option>
+            <option value="soustraction">Soustraction</option>
+            <option value="multiplication">Multiplication</option>
+            <option value="division">Division</option>
+            <option value="puissance">Puissance</option>
+            <option value="racine">Racine Carrée (Nombre 1 uniquement)</option>
         </select>
-        <input type="number" name="nombre2" step="any" required>
-        <button type="submit">Calculer</button>
-    </form>
-    {% if resultat is not none %}
-        <h2>Résultat: {{ resultat }}</h2>
-    {% endif %}
+        <button onclick="calculer()">Calculer</button>
+        <button onclick="resetFields()">Réinitialiser</button>
+        <p id="resultat"></p>
+    </div>
+
+    <script>
+        async function calculer() {
+            const a = parseFloat(document.getElementById('a').value);
+            const b = parseFloat(document.getElementById('b').value);
+            const operation = document.getElementById('operation').value;
+
+            const response = await fetch('http://localhost:5000/calcul', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ a, b, operation })
+            });
+
+            const data = await response.json();
+            document.getElementById('resultat').innerText = data.resultat ?? data.error;
+        }
+
+        function resetFields() {
+            document.getElementById('a').value = "";
+            document.getElementById('b').value = "";
+            document.getElementById('operation').value = "addition";
+            document.getElementById('resultat').innerText = "";
+        }
+    </script>
 </body>
 </html>
