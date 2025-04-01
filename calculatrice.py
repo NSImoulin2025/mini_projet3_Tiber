@@ -17,8 +17,8 @@ class Calculatrice:
     def puissance(self, a, b):
         return a ** b
 
-    def racine(self, a):
+    def racine_carree(self, a):
         if a >= 0:
             return a ** 0.5
         else:
-            raise ValueError("La racine carrée d'un nombre négatif est impossible")
+            raise ValueError("Racine carrée d'un nombre négatif impossible")
