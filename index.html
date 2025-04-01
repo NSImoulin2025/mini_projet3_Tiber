@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Calculatrice Avancée</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Calculatrice</title>
 </head>
 <body>
     <div class="calculator">
-        <h1>Calculatrice</h1>
         <input type="number" id="a" placeholder="Nombre 1">
         <input type="number" id="b" placeholder="Nombre 2">
         <select id="operation">
@@ -16,36 +15,47 @@
             <option value="soustraction">Soustraction</option>
             <option value="multiplication">Multiplication</option>
             <option value="division">Division</option>
-            <option value="puissance">Puissance</option>
-            <option value="racine">Racine Carrée (Nombre 1 uniquement)</option>
+            <option value="puissance">Puissance (a^b)</option>
+            <option value="racine">Racine carrée (de a)</option>
         </select>
         <button onclick="calculer()">Calculer</button>
-        <button onclick="resetFields()">Réinitialiser</button>
+        <button onclick="clearFields()">Effacer</button>
         <p id="resultat"></p>
     </div>
 
     <script>
-        async function calculer() {
-            const a = parseFloat(document.getElementById('a').value);
-            const b = parseFloat(document.getElementById('b').value);
-            const operation = document.getElementById('operation').value;
+    async function calculer() {
+        const a = parseFloat(document.getElementById('a').value);
+        const b = parseFloat(document.getElementById('b').value);
+        const operation = document.getElementById('operation').value;
 
-            const response = await fetch('http://localhost:5000/calcul', {
+        try {
+            const response = await fetch('/calcul', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ a, b, operation })
             });
 
             const data = await response.json();
-            document.getElementById('resultat').innerText = data.resultat ?? data.error;
-        }
 
-        function resetFields() {
-            document.getElementById('a').value = "";
-            document.getElementById('b').value = "";
-            document.getElementById('operation').value = "addition";
-            document.getElementById('resultat').innerText = "";
+            if (response.ok) {
+                document.getElementById('resultat').innerText = "Résultat : " + data.resultat;
+            } else {
+                document.getElementById('resultat').innerText = "Erreur : " + data.error;
+            }
+        } catch (error) {
+            document.getElementById('resultat').innerText = "Erreur de connexion au serveur.";
         }
+    }
+
+    function clearFields() {
+            document.getElementById('a').value = '';
+            document.getElementById('b').value = '';
+            document.getElementById('operation').value = 'addition';
+            document.getElementById('resultat').innerText = '';
+    }
+</script>
+
     </script>
 </body>
 </html>
